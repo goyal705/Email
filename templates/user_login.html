@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { max-width: 400px; margin: auto; }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 8px; margin-top: 5px; }
+        button { margin-top: 20px; padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .register-btn { display: block; text-align: center; margin-top: 10px; text-decoration: none; background-color: #2196F3; color: white; padding: 10px; border-radius: 4px; }
+        .register-btn:hover { background-color: #0b7dda; }
+        .success-message { text-align: center; color: green; font-weight: bold; }
+    </style>
+    <script>
+        setTimeout(() => {
+            const msg = document.querySelector('.success-message');
+            if (msg) msg.style.display = 'none';
+        }, 3000);
+    </script>
+</head>
+<body>
+    <h1>User Login</h1>
+
+    {% if success %}
+        <p class="success-message">Registration successful! Please log in.</p>
+    {% endif %}
+
+    <form action="/login" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ email }}" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <a href="/user_registration" class="register-btn">Register</a>
+</body>
+</html>
