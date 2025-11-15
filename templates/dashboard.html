@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Welcome Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -102,7 +103,7 @@
           View My Companies
         </button>
         <button class="tab-button" onclick="openTab(event, 'mail')">
-          Send Mail
+          Schedule Mails
         </button>
         <button class="tab-button" onclick="openTab(event, 'profile')">
           Update Profile
@@ -124,6 +125,7 @@
               <th>HR Name</th>
               <th>Email</th>
               <th>Company Name</th>
+              <th>Mail Sent</th>
               <th>Added By (User Name)</th>
               <th>Actions</th>
             </tr>
@@ -181,15 +183,14 @@
           fetch("/updateprofile")
             .then((response) => response.text())
             .then((html) => {
-              document.getElementById("profile-form-container").innerHTML = html;
+              document.getElementById("profile-form-container").innerHTML =
+                html;
             })
             .catch(() => {
               document.getElementById("profile-form-container").innerHTML =
                 "<p>Failed to load form.</p>";
             });
-        } else
-        
-        if (tabName === "add-company") {
+        } else if (tabName === "add-company") {
           fetch("/company_registration")
             .then((response) => response.text())
             .then((html) => {
@@ -203,13 +204,12 @@
         }
       }
 
-      // Run when the page finishes loading
       window.addEventListener("load", () => {
-        loadCompanies(); // Load companies automatically on page load
+        loadCompanies();
       });
     </script>
     <script>
-    async function sendMail(id) {
+      async function sendMail(id) {
         const response = await fetch(`/send_mail/${id}`, {
           method: "POST",
         });

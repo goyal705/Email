@@ -13,7 +13,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from database import Base, engine, get_db, send_email_background
 from sqlalchemy.orm import Session
-from models import User, Company
+from models import SentMailLog, User, Company
 import shutil
 import os
 import shutil
@@ -200,6 +200,7 @@ async def my_companies(
     companies = (
         db.query(Company)
         .filter(Company.user_id == current_user["id"])
+        .order_by(Company.id)
         .offset(skip)
         .limit(per_page)
         .all()
@@ -213,14 +214,20 @@ async def my_companies(
     # Table rows
     rows_html = ""
     for c in companies:
+        mail_sent = db.query(SentMailLog).filter(SentMailLog.company_id == c.id, SentMailLog.status == True).count()
+        
         rows_html += f"""
         <tr>
             <td style='text-align:center;'>{c.id}</td>
-            <td>{c.hr_name}</td>
-            <td>{c.email}</td>
-            <td>{c.company_name}</td>
-            <td>{c.user.name}</td>
+            <td style='text-align:center;'>{c.hr_name}</td>
+            <td style='text-align:center;'>{c.email}</td>
+            <td style='text-align:center;'>{c.company_name}</td>
+            <td style='text-align:center;'>{mail_sent}</td>
+            <td style='text-align:center;'>{c.user.name}</td>
             <td style='text-align:center;'>
+                <a href="/company_details/{c.id}">
+                    <i class="fa fa-eye" style="font-size:20px;color:blue;"></i>
+                </a>
                 <button onclick="window.location.href='/edit_company/{c.id}'" 
                         style='background:#2196F3;color:white;border:none;padding:5px 8px;border-radius:3px;cursor:pointer;'>
                     Edit
@@ -230,7 +237,7 @@ async def my_companies(
                     Delete
                 </button>
                 <button onclick="sendMail({c.id})" 
-                        style='background:#2296F3;color:white;border:none;padding:5px 8px;border-radius:3px;cursor:pointer;'>
+                        style='background:#34E80C;color:white;border:none;padding:5px 8px;border-radius:3px;cursor:pointer;'>
                     Send Mail
                 </button>
             </td>
@@ -238,7 +245,7 @@ async def my_companies(
         """
 
     # Pagination controls
-    pagination_html = "<div style='text-align:center;margin-top:10px;'>"
+    pagination_html = "<div style='text-align:center;margin-top:10px;margin-bottom:10px;'>"
     if page > 1:
         pagination_html += (
             f"<button onclick='loadCompanies({page - 1})'>Previous</button> "
